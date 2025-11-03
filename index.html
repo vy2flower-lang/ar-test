@@ -3,6 +3,7 @@
 <head>
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://unpkg.com/gifuct-js/dist/gifuct.min.js"></script>
 </head>
 
 <body>
@@ -15,28 +16,47 @@
   </a-scene>
 
   <script>
-    // GIFを読み込む
-    const gifImg = new Image();
-    gifImg.src = './assets/karapare25.11.gif';
-    gifImg.crossOrigin = "anonymous";
+    const gifImg = document.getElementById('gif1');
 
-    gifImg.onload = () => {
-      // Canvas を作成
+    gifImg.onload = async () => {
+      // GIFをArrayBufferとして取得
+      const response = await fetch(gifImg.src);
+      const arrayBuffer = await response.arrayBuffer();
+
+      // gifuct-jsでデコード
+      const gif = new window.GIF(arrayBuffer);
+      const frames = gif.decompressFrames(true); // trueで透明部分も考慮
+
+      // Canvas作成
       const canvas = document.createElement('canvas');
-      canvas.width = gifImg.width;
-      canvas.height = gifImg.height;
+      canvas.width = frames[0].dims.width;
+      canvas.height = frames[0].dims.height;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(gifImg, 0, 0);
 
-      // A-Frame plane に canvas を貼る
+      // A-Frame planeにcanvasを貼る
       const plane = document.querySelector('#gifPlane');
       plane.setAttribute('material', 'src', canvas);
 
-      // 簡易GIF再生 (1フレームずつはできないので全体をループ描画)
-      setInterval(() => {
-        ctx.drawImage(gifImg, 0, 0);
+      // GIFフレームループ再生
+      let currentFrame = 0;
+      function animateFrame() {
+        const frame = frames[currentFrame];
+
+        // ImageDataに変換して描画
+        const imageData = ctx.createImageData(frame.dims.width, frame.dims.height);
+        imageData.data.set(frame.patch);
+        ctx.putImageData(imageData, frame.dims.left, frame.dims.top);
+
         plane.getObject3D('mesh').material.map.needsUpdate = true;
-      }, 100); // 10fps程度
+
+        // 次のフレーム
+        currentFrame = (currentFrame + 1) % frames.length;
+
+        // フレーム遅延に従ってループ
+        setTimeout(animateFrame, frame.delay || 100); // delayは1/100秒単位
+      }
+
+      animateFrame();
     };
   </script>
 
