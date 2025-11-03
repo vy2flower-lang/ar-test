@@ -8,26 +8,18 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   <script src="https://unpkg.com/gifuct-js/dist/gifuct.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    canvas {
-      display: block;
-    }
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
   </style>
 </head>
 
 <body>
-
   <a-scene embedded arjs="patternRatio:0.9">
     <a-assets>
       <img id="gif1" src="./assets/karapare25.11.gif" crossorigin="anonymous">
     </a-assets>
 
     <a-marker type="pattern" url="./assets/pattern-marker.patt">
-      <!-- GIF を表示する平面 -->
       <a-plane id="gifPlane" position="0 0.5 0" rotation="-90 0 0" width="2" height="2"></a-plane>
     </a-marker>
 
@@ -43,8 +35,8 @@
       const arrayBuffer = await response.arrayBuffer();
 
       // gifuct-jsでフレーム分解
-      const gif = new window.GIF(arrayBuffer);
-      const frames = gif.decompressFrames(true); // trueで透明部分を保持
+      const parsedGif = window.gifuct.parseGIF(arrayBuffer);
+      const frames = window.gifuct.decompressFrames(parsedGif, true);
 
       // Canvas作成
       const canvas = document.createElement('canvas');
@@ -58,10 +50,14 @@
 
       // フレームアニメーション
       let currentFrame = 0;
+
       function animateFrame() {
         const frame = frames[currentFrame];
 
-        // ImageDataを作成
+        // 前フレームをクリア（透明部分もリセット）
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // ImageDataを作成して描画
         const imageData = ctx.createImageData(frame.dims.width, frame.dims.height);
         imageData.data.set(frame.patch);
         ctx.putImageData(imageData, frame.dims.left, frame.dims.top);
@@ -72,14 +68,12 @@
         // 次フレーム
         currentFrame = (currentFrame + 1) % frames.length;
 
-        // フレーム遅延（100分の1秒単位）
+        // 遅延時間（frame.delayは1/100秒単位）
         setTimeout(animateFrame, frame.delay * 10 || 100);
       }
 
       animateFrame();
     };
   </script>
-
 </body>
-
 </html>
