@@ -1,41 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>AR GIF Sample</title>
-  <!-- A-Frame ライブラリの読み込み※GIFはV0.9.0で動く -->
-  <script src='https://aframe.io/releases/0.9.0/aframe.min.js'></script>
-  <!-- AR.js ライブラリの読み込み -->
-  <script src='https://raw.githack.com/jeromeetienne/AR.js/2.0.8/aframe/build/aframe-ar.js'></script>
-  <!-- shaderライブラリ -->
-  <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
-  <script src="shader-grid-glitch.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-  </style>
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
 
 <body>
-  <a-scene embedded arjs="sourceType: webcam; patternRatio: 0.90;">
-    <a-assets>
-      <img id="kaeru" src="assets/karapare25-11.gif" crossorigin="anonymous">
-    </a-assets>
-
-    <!-- マーカー設定 -->
-    <a-marker type="pattern" url="assets/pattern-marker.patt">
-
-      <!-- GIFアニメを表示 -->
-      <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"
-        material="shader: gif; src: #kaeru; transparent: true; crossOrigin: anonymous;">
-      </a-plane>
-
+  <a-scene embedded arjs="patternRatio:0.90">
+    <a-marker type="pattern" url="assets/pattern-maker.patt">
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
     </a-marker>
-
     <a-entity camera></a-entity>
   </a-scene>
 </body>
