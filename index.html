@@ -3,12 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>AR Marker Test</title>
+  <title>AR GIF Sample</title>
 
   <!-- A-Frame本体 -->
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <!-- AR.js for A-Frame -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <!-- GIFシェーダー -->
+  <script src="https://cdn.jsdelivr.net/gh/mayognaise/aframe-gif-shader@master/dist/aframe-gif-shader.min.js"></script>
 
   <style>
     body {
@@ -21,14 +23,24 @@
 <body>
   <!-- ARシーン -->
   <a-scene embedded arjs="sourceType: webcam; patternRatio: 0.90;">
-    <!-- マーカーの設定 -->
+
+    <!-- マーカー設定 -->
     <a-marker type="pattern" url="assets/pattern-marker.patt">
-      <!-- マーカー上に出す立方体 -->
-      <a-box position="0 0.5 0" rotation="0 45 0" color="#4CC3D9"></a-box>
+
+      <!-- マーカー上に表示するGIFアニメ -->
+      <a-plane
+        position="0 0 0"
+        rotation="-90 0 0"
+        width="1"
+        height="1"
+        material="shader: gif; src: url(assets/karapare25-11.gif); transparent: true; crossOrigin: anonymous;">
+      </a-plane>
+
     </a-marker>
 
     <!-- カメラ -->
     <a-entity camera></a-entity>
+
   </a-scene>
 </body>
 
