@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>AR GIF Sample</title>
+
   <!-- A-Frame本体 -->
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <!-- AR.js for A-Frame -->
@@ -13,14 +14,17 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
+  <!-- ARシーン -->
   <a-scene embedded arjs="sourceType: webcam;">
-    <!-- マーカー検出時に表示される要素 -->
+
+    <!-- マーカーの設定（assetsフォルダ内のpattern-marker.pattを指定） -->
     <a-marker type="pattern" url="assets/pattern-marker.patt">
 
-      <!-- GIFアニメ -->
+      <!-- マーカー上に表示するGIF -->
       <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"
-        material="shader: gif; src: url(assets/karapare25-11.gif); transparent: true;">
+        material="shader: gif; src: url(assets/karapare25-11.gif); transparent: true; crossOrigin: anonymous;">
       </a-plane>
+
     </a-marker>
 
     <!-- カメラ -->
