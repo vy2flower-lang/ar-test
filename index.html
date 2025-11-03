@@ -1,17 +1,76 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 
 <head>
+  <meta charset="UTF-8">
+  <title>AR Video Sample</title>
+
+  <!-- A-Frame本体 -->
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <!-- AR.js for A-Frame -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
 </head>
 
 <body>
-  <a-scene embedded arjs="patternRatio:0.90">
-    <a-marker type="pattern" url="assets/pattern-maker.patt">
-      <a-image src="assets/pattern-marker.png" rotation="0 0 0" position="0 0 0" width="1" height="1"></a-image>
+  <a-scene embedded arjs="sourceType: webcam; patternRatio: 0.90;">
+    <a-assets>
+      <!-- 動画をアセットとして登録 -->
+      <video id="video1"
+             src="assets/karapare25-11.mp4"
+             preload="auto"
+             loop
+             muted
+             playsinline
+             webkit-playsinline>
+      </video>
+    </a-assets>
+
+    <!-- マーカー設定 -->
+    <a-marker type="pattern" url="assets/pattern-karapare25.11-0000.patt" id="marker">
+      <!-- マーカー上に動画を貼る -->
+      <a-video src="#video1"
+               rotation="-90 0 0"
+               width="1"
+               height="1"
+               position="0 0 0">
+      </a-video>
     </a-marker>
+
+    <!-- カメラ -->
     <a-entity camera></a-entity>
   </a-scene>
+
+  <script>
+    // --- 自動再生を確実にする処理 ---
+    const marker = document.querySelector('#marker');
+    const video = document.querySelector('#video1');
+
+    // 1️⃣ ページロード時に一度再生を試みる
+    window.addEventListener('load', () => {
+      video.play().catch(() => {
+        console.log('Autoplay blocked; will start on marker found.');
+      });
+    });
+
+    // 2️⃣ マーカー検出時に動画を再生
+    marker.addEventListener('markerFound', () => {
+      if (video.paused) {
+        video.play();
+      }
+    });
+
+    // 3️⃣ マーカーが見えなくなったら一時停止（任意）
+    marker.addEventListener('markerLost', () => {
+      video.pause();
+    });
+  </script>
 </body>
 
 </html>
