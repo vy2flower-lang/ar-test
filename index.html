@@ -2,24 +2,37 @@
 <html lang="ja">
 
 <head>
-  <title>My A-Frame Scene</title>
-  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <meta charset="UTF-8">
+  <title>AR GIF Sample</title>
+  <!-- A-Frame本体 -->
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <!-- AR.js for A-Frame -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-  <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
+  <!-- GIFシェーダー -->
+  <script src="https://cdn.jsdelivr.net/gh/mayognaise/aframe-gif-shader@master/dist/aframe-gif-shader.min.js"></script>
 </head>
 
-<body>
-  <a-scene>
-    <a-entity position="0 2 -4" rotation="0 25 0" geometry="primitive:box;"
-      material="shader:gif;src:url(assets/karapare25-11.gif)"></a-entity>
-  </a-scene>
-  <a-marker type="pattern" url="pattern-marker.patt">
-    <a-entity>
-      <a-obj-model position="0 0 0" scale="0.05 0.05 0.05" rotation="270 0 0" src="#cat-obj" mtl="#cat-mtl" id="sample">
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs="sourceType: webcam;">
+    <!-- マーカー検出時に表示される要素 -->
+    <a-marker type="pattern" url="pattern-marker.patt">
+
+      <!-- GIFアニメ -->
+      <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"
+        material="shader: gif; src: url(assets/karapare25-11.gif); transparent: true;">
+      </a-plane>
+
+      <!-- OBJモデルを同時に表示する場合（任意） -->
+      <!--
+      <a-obj-model position="0 0 0" scale="0.05 0.05 0.05"
+        rotation="270 0 0" src="#cat-obj" mtl="#cat-mtl">
       </a-obj-model>
-    </a-entity>
-  </a-marker>
-  <a-entity camera></a-entity>
+      -->
+    </a-marker>
+
+    <!-- カメラ -->
+    <a-entity camera></a-entity>
+  </a-scene>
 </body>
 
 </html>
