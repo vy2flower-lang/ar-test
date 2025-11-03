@@ -1,19 +1,34 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 
 <head>
+  <meta charset="UTF-8">
+  <title>AR GIF Sample</title>
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   <script src="https://unpkg.com/gifuct-js/dist/gifuct.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 
 <body>
+
   <a-scene embedded arjs="patternRatio:0.9">
     <a-assets>
-      <img id="gif1" src="./assets/karapare25.11.gif">
+      <img id="gif1" src="./assets/karapare25.11.gif" crossorigin="anonymous">
     </a-assets>
 
     <a-marker type="pattern" url="./assets/pattern-marker.patt">
-      <a-plane id="gifPlane" position="0 0 0" rotation="-90 0 0" width="2" height="2"></a-plane>
+      <!-- GIF を表示する平面 -->
+      <a-plane id="gifPlane" position="0 0.5 0" rotation="-90 0 0" width="2" height="2"></a-plane>
     </a-marker>
 
     <a-entity camera></a-entity>
@@ -27,9 +42,9 @@
       const response = await fetch(gifImg.src);
       const arrayBuffer = await response.arrayBuffer();
 
-      // gifuct-jsでデコード
+      // gifuct-jsでフレーム分解
       const gif = new window.GIF(arrayBuffer);
-      const frames = gif.decompressFrames(true); // trueで透明部分も考慮
+      const frames = gif.decompressFrames(true); // trueで透明部分を保持
 
       // Canvas作成
       const canvas = document.createElement('canvas');
@@ -37,27 +52,28 @@
       canvas.height = frames[0].dims.height;
       const ctx = canvas.getContext('2d');
 
-      // A-Frame planeにcanvasを貼る
+      // A-Frame plane に canvas を貼る
       const plane = document.querySelector('#gifPlane');
       plane.setAttribute('material', 'src', canvas);
 
-      // GIFフレームループ再生
+      // フレームアニメーション
       let currentFrame = 0;
       function animateFrame() {
         const frame = frames[currentFrame];
 
-        // ImageDataに変換して描画
+        // ImageDataを作成
         const imageData = ctx.createImageData(frame.dims.width, frame.dims.height);
         imageData.data.set(frame.patch);
         ctx.putImageData(imageData, frame.dims.left, frame.dims.top);
 
+        // A-Frameに更新通知
         plane.getObject3D('mesh').material.map.needsUpdate = true;
 
-        // 次のフレーム
+        // 次フレーム
         currentFrame = (currentFrame + 1) % frames.length;
 
-        // フレーム遅延に従ってループ
-        setTimeout(animateFrame, frame.delay || 100); // delayは1/100秒単位
+        // フレーム遅延（100分の1秒単位）
+        setTimeout(animateFrame, frame.delay * 10 || 100);
       }
 
       animateFrame();
